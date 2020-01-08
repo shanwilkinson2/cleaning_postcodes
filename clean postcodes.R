@@ -3,28 +3,47 @@ library(stringr)
 # library(purrr)
 
 # create sample postcodes 
-  pcodes <- c("M1 1AF", "M46 0AA", "BL1 1RU", "bl1 1ru", " bl! 1ru" , "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU")
+  pcodes <- c("M1 1AF", "M46 0AA", "BL1 1RU", "bl1 1ru", " bl! 1ru" , 
+              "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", 
+              "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
+              '!\"£$%^&*()', "BL& $RR", 'BL$ "RF')
 
-# create a dataframe to hold input postcode, output postcode, whether postcode is valid as it is
+# create a dataframe to hold input postcode, whether postcode is valid as it is, 
+  # output postcode, whether pcode is finally valid
   output <- data.frame(input_pcode = as.character(pcodes), 
-                      valid = str_detect(pcodes, "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"),
+                      input_valid = str_detect(pcodes, "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"),
+                      output_pcode = as.character(pcodes),
                       stringsAsFactors = FALSE)
+  output$output_valid <- output$input_valid
 
-# if postcode is valid as it is, copy input postcode to output postcode  
-  output$output_pcode <- ifelse(output$valid == TRUE, yes = output$input_pcode, no = "")
-
-# want to keep the column as initial validity so can see how much time it's saved. 
-  # create a new valid vector as cleaning is done
-  output$final_valid <- output$valid
-  
 # trim trailing & leading whitespace, convert to uppercase, replace double spaces, check if valid now   
-  output$output_pcode <- ifelse(output$valid == FALSE, 
-                                yes = output$input_pcode %>%
+  output$output_pcode <- ifelse(output$output_valid == FALSE, 
+                                yes = output$output_pcode %>%
                                   str_trim() %>%
                                   str_to_upper() %>%
                                   str_replace_all("  ", " "), 
                                 no = output$output_pcode)
-  output$final_valid <- ifelse(str_detect(output$output_pcode, "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"), yes = TRUE, no = FALSE)
+  output$output_valid <- ifelse(str_detect(output$output_pcode, 
+                                          "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"), 
+                               yes = TRUE, no = FALSE)
+
+# get rid of any special characters & check again
+  output$output_pcode <- ifelse(output$output_valid == FALSE, 
+                                yes = output$output_pcode %>%
+                                  str_replace_all("!", "1") %>%
+                                  str_replace_all('\"', '2') %>% 
+                                  str_replace_all("\\$", "4") %>%
+                                  str_replace_all("£", "3") %>%
+                                  str_replace_all("%", "5") %>%
+                                  str_replace_all('\\^', '6') %>% 
+                                  str_replace_all("&", "7") %>%
+                                  str_replace_all("\\*", "8") %>%
+                                  str_replace_all("\\(", "9") %>%
+                                  str_replace_all("\\)", "0"),
+                                no = output$output_pcode)
+  output$output_valid <- ifelse(str_detect(output$output_pcode, 
+                                           "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"), 
+                                yes = TRUE, no = FALSE)
 
   
 # This doesn't cover overseas territories and only enforces the format, NOT the existence of different areas. It is based on the following rules:
