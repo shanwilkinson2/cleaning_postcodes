@@ -6,8 +6,10 @@ library(stringr)
   pcodes <- c("M1 1AF", "M46 0AA", "BL1 1RU", "bl1 1ru", " bl! 1ru" , 
               "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", 
               "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
-              '!\"£$%^&*()', "BL& $RR", 'BL$ "RF')
+              '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP")
 
+clean_postcodes <- function(pcodes) {  
+  
 # create a dataframe to hold input postcode, whether postcode is valid as it is, 
   # output postcode, whether pcode is finally valid
   output <- data.frame(input_pcode = as.character(pcodes), 
@@ -44,7 +46,9 @@ library(stringr)
   output$output_valid <- ifelse(str_detect(output$output_pcode, 
                                            "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"), 
                                 yes = TRUE, no = FALSE)
-
+  
+  return(output)
+}
   
 # This doesn't cover overseas territories and only enforces the format, NOT the existence of different areas. It is based on the following rules:
 # 
