@@ -1,5 +1,6 @@
 library(dplyr)
 library(stringr)
+library(data.table)
 # library(assertive)
 # library(purrr)
 
@@ -7,9 +8,12 @@ library(stringr)
   pcodes <- c("M1 1AF", "M46 0AA", "BL1 1RU", "bl1 1ru", " bl! 1ru" , 
               "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", 
               "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
-              '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP", "BL11PP")
+              '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP", "BL11PP", 
+              "M11af", "sw1a1AA", "Westhoughton")
 
 clean_postcodes <- function(pcodes) {  
+  
+# regex to match postcode format  
   pcode_regex <- "^[A-Z]{1,2}\\d[A-Z\\d]? {1}\\d[A-Z]{2}$"
   
 # create a dataframe to hold input postcode, whether postcode is valid as it is, 
@@ -49,6 +53,19 @@ clean_postcodes <- function(pcodes) {
                                            pcode_regex), 
                                 yes = TRUE, no = FALSE)
   
+# dodgy spacing 
+  # no spaces - if postcode length is between 5 & 7, put one in 4 from the end
+  # check again
+  output$output_pcode <- ifelse((output$output_valid == FALSE & 
+                                   str_count(output$output_pcode, "\\s") == 0 & 
+                                   between(nchar(output$output_pcode), 5, 7)),
+                                yes = paste(str_sub(output$output_pcode, 1, -4), 
+                                            str_sub(output$output_pcode, -3, -1)), 
+                                no = output$output_pcode)
+  output$output_valid <- ifelse(str_detect(output$output_pcode, 
+                                           pcode_regex), 
+                                yes = TRUE, no = FALSE)
+
   return(output)
 }
   
