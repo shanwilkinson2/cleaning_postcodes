@@ -8,6 +8,7 @@
 * leading/ trailing spaces
 * special characters to numbers (ie !"£ to 123)
 * double space changed to single space
+* no spaces
 ## not yet corrected 
 * spaces in the wrong place
 * O to 0 where it must be a number
