@@ -1,19 +1,21 @@
 library(dplyr)
 library(stringr)
+# library(assertive)
 # library(purrr)
 
 # create sample postcodes 
   pcodes <- c("M1 1AF", "M46 0AA", "BL1 1RU", "bl1 1ru", " bl! 1ru" , 
               "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", 
               "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
-              '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP")
+              '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP", "BL11PP")
 
 clean_postcodes <- function(pcodes) {  
+  pcode_regex <- "^[A-Z]{1,2}\\d[A-Z\\d]? {1}\\d[A-Z]{2}$"
   
 # create a dataframe to hold input postcode, whether postcode is valid as it is, 
   # output postcode, whether pcode is finally valid
   output <- data.frame(input_pcode = as.character(pcodes), 
-                      input_valid = str_detect(pcodes, "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"),
+                      input_valid = str_detect(pcodes, pcode_regex),
                       output_pcode = as.character(pcodes),
                       stringsAsFactors = FALSE)
   output$output_valid <- output$input_valid
@@ -26,7 +28,7 @@ clean_postcodes <- function(pcodes) {
                                   str_replace_all("  ", " "), 
                                 no = output$output_pcode)
   output$output_valid <- ifelse(str_detect(output$output_pcode, 
-                                          "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"), 
+                                          pcode_regex), 
                                yes = TRUE, no = FALSE)
 
 # get rid of any special characters & check again
@@ -44,7 +46,7 @@ clean_postcodes <- function(pcodes) {
                                   str_replace_all("\\)", "0"),
                                 no = output$output_pcode)
   output$output_valid <- ifelse(str_detect(output$output_pcode, 
-                                           "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"), 
+                                           pcode_regex), 
                                 yes = TRUE, no = FALSE)
   
   return(output)
