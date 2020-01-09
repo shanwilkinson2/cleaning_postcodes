@@ -14,5 +14,4 @@
 * spaces in the wrong place
 * O to 0, E for 3 where it must be a number
 * extra text at beginning or end eg part answer to another question
-* extra non letter characters eg . instead of space
 
