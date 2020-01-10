@@ -1,6 +1,7 @@
 library(dplyr)
 library(stringr)
-library(data.table)
+library(glue)
+
 # library(assertive)
 # library(purrr)
 
@@ -9,7 +10,7 @@ library(data.table)
               "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", 
               "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
               '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP", "BL11PP", 
-              "M11af", "sw1a1AA", "Westhoughton")
+              "M11af", "sw1a1AA", "Westhoughton", "M4. 5UP,")
 
 clean_postcodes <- function(pcodes) {  
   
@@ -36,6 +37,7 @@ clean_postcodes <- function(pcodes) {
                                yes = TRUE, no = FALSE)
 
 # get rid of any special characters & check again
+  # [[:punct:]] = punctuation
   output$output_pcode <- ifelse(output$output_valid == FALSE, 
                                 yes = output$output_pcode %>%
                                   str_replace_all("!", "1") %>%
@@ -47,8 +49,10 @@ clean_postcodes <- function(pcodes) {
                                   str_replace_all("&", "7") %>%
                                   str_replace_all("\\*", "8") %>%
                                   str_replace_all("\\(", "9") %>%
-                                  str_replace_all("\\)", "0"),
+                                  str_replace_all("\\)", "0") %>%
+                                  str_replace_all("[[:punct:]]", ""),
                                 no = output$output_pcode)
+  
   output$output_valid <- ifelse(str_detect(output$output_pcode, 
                                            pcode_regex), 
                                 yes = TRUE, no = FALSE)
@@ -65,10 +69,18 @@ clean_postcodes <- function(pcodes) {
   output$output_valid <- ifelse(str_detect(output$output_pcode, 
                                            pcode_regex), 
                                 yes = TRUE, no = FALSE)
-
-  return(output)
-}
   
+  # message - summary of those that needed cleaning & how many were successfully cleaned
+    cleaning_stats <- table(output[output$input_valid ==FALSE, c(2,4)]) 
+    message(glue("{cleaning_stats[1,2]}/{sum(cleaning_stats)} ",
+                 "({round(cleaning_stats[1,2]/sum(cleaning_stats)*100)}%) ",
+                 "of initially invalid postcodes were successfully cleaned"))
+  return(output)
+  
+
+}
+
+
 # This doesn't cover overseas territories and only enforces the format, NOT the existence of different areas. It is based on the following rules:
 # 
 # Can accept the following formats:
