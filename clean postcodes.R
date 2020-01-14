@@ -58,14 +58,21 @@ clean_postcodes <- function(pcodes) {
                                 yes = TRUE, no = FALSE)
   
 # dodgy spacing 
+  # more than one space - get rid of all spaces
+  output$output_pcode <- ifelse(output$output_valid == FALSE &
+                                between(str_count(output$output_pcode, "[:alnum:]"), 5, 7) & # 5-7 letters and/or numbers 
+                                str_count(output$output_pcode, "\\s") > 1, # more than 1 space
+                                yes = str_replace_all(output$output_pcode, "\\s", ""), # no spaces, can put single space in below
+                                no = output$output_pcode)  
   # no spaces - if postcode length is between 5 & 7, put one in 4 from the end
-  # check again
   output$output_pcode <- ifelse((output$output_valid == FALSE & 
                                    str_count(output$output_pcode, "\\s") == 0 & 
                                    between(nchar(output$output_pcode), 5, 7)),
                                 yes = paste(str_sub(output$output_pcode, 1, -4), 
                                             str_sub(output$output_pcode, -3, -1)), 
                                 no = output$output_pcode)
+
+  # check again
   output$output_valid <- ifelse(str_detect(output$output_pcode, 
                                            pcode_regex), 
                                 yes = TRUE, no = FALSE)
