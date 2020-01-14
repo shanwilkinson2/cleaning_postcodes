@@ -11,8 +11,9 @@
 * other special characters deleted
 * double space changed to single space
 * no spaces - space inserted 4 from the end
+* more than one space not double
 ## not yet corrected 
-* spaces in the wrong place
+* single space in the wrong place
 * O to 0, E for 3 where it must be a number
 * extra text at beginning or end eg part answer to another question
 
