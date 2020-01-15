@@ -1,6 +1,6 @@
 # cleaning_postcodes
 
-* Function which aims to take postcodes inputted & correct common errors so the postcodes can be matched to a list of existing postcodes
+* Function which aims to take postcodes inputted (as either a vector or column of a dataframe) & correct common errors so the postcodes can be matched to a list of existing postcodes
 * Does not check if the postcodes actually exist, just that the format is compatible with those that do exist
 * Only checks for full postcodes not part postcodes
 
