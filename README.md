@@ -12,6 +12,7 @@
 * double space changed to single space
 * no spaces - space inserted 4 from the end
 * more than one space not double
+* single space in the wrong place
 ## not yet corrected 
 * single space in the wrong place
 * O to 0, E for 3 where it must be a number
