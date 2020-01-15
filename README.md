@@ -13,8 +13,8 @@
 * no spaces - space inserted 4 from the end
 * more than one space not double
 * single space in the wrong place
+* o to zero in second half only eg WA11 OQZ to WA11 0QZ 
 ## not yet corrected 
-* single space in the wrong place
-* O to 0, E for 3 where it must be a number
+* E for 3 where it must be a number
 * extra text at beginning or end eg part answer to another question
 
