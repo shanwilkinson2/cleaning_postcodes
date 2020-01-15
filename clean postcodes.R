@@ -10,7 +10,7 @@ library(glue)
               "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", 
               "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
               '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP", "BL11PP", 
-              "M11af", "sw1a1AA", "Westhoughton", "M4. 5UP,")
+              "M11af", "sw1a1AA", "Westhoughton", "M4. 5UP,", "bl 15AX")
 
 clean_postcodes <- function(pcodes) {  
   
@@ -64,6 +64,13 @@ clean_postcodes <- function(pcodes) {
                                 str_count(output$output_pcode, "\\s") > 1, # more than 1 space
                                 yes = str_replace_all(output$output_pcode, "\\s", ""), # no spaces, can put single space in below
                                 no = output$output_pcode)  
+
+  # one space in the wrong place - get rid of it
+  output$output_pcode <- ifelse((output$output_valid == FALSE & 
+                                   str_count(output$output_pcode, "\\s") == 1 & 
+                                   str_detect(output$output_pcode, "^[A-Z]{1,2}\\d[A-Z\\d]? {1}") == FALSE),
+                                yes = str_replace_all(output$output_pcode, "\\s", ""), 
+                                no = output$output_pcode)
   # no spaces - if postcode length is between 5 & 7, put one in 4 from the end
   output$output_pcode <- ifelse((output$output_valid == FALSE & 
                                    str_count(output$output_pcode, "\\s") == 0 & 
@@ -71,7 +78,6 @@ clean_postcodes <- function(pcodes) {
                                 yes = paste(str_sub(output$output_pcode, 1, -4), 
                                             str_sub(output$output_pcode, -3, -1)), 
                                 no = output$output_pcode)
-
   # check again
   output$output_valid <- ifelse(str_detect(output$output_pcode, 
                                            pcode_regex), 
