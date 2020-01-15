@@ -68,7 +68,7 @@ clean_postcodes <- function(pcodes) {
   # one space in the wrong place - get rid of it
   output$output_pcode <- ifelse((output$output_valid == FALSE & 
                                    str_count(output$output_pcode, "\\s") == 1 & 
-                                   str_detect(output$output_pcode, "^[A-Z]{1,2}\\d[A-Z\\d]? {1}") == FALSE),
+                                   str_detect(output$output_pcode, "^[A-Z]{1,2}\\d[A-Z\\d]? {1}") == FALSE), # first half of postcode with space in right place
                                 yes = str_replace_all(output$output_pcode, "\\s", ""), 
                                 no = output$output_pcode)
   # no spaces - if postcode length is between 5 & 7, put one in 4 from the end
@@ -83,6 +83,18 @@ clean_postcodes <- function(pcodes) {
                                            pcode_regex), 
                                 yes = TRUE, no = FALSE)
   
+# numbers to letters & vice versa (but only in the second half as where they tend to crop up)
+  # o to zero
+  output$output_pcode <- ifelse((output$output_valid == FALSE & 
+                                 str_detect(output$output_pcode, "^[A-Z]{1,2}\\d[A-Z\\d]? {1}O")), # first half of postcode followed by letter O
+                                yes = paste0(str_sub(output$output_pcode, 1, -4), "0",
+                                            str_sub(output$output_pcode, -2, -1)), 
+                                no = output$output_pcode)
+  # check again
+  output$output_valid <- ifelse(str_detect(output$output_pcode, 
+                                           pcode_regex), 
+                                yes = TRUE, no = FALSE)  
+  
   # message - summary of those that needed cleaning & how many were successfully cleaned
     cleaning_stats <- table(output[output$input_valid ==FALSE, c(2,4)]) 
     message(glue("{cleaning_stats[1,2]}/{sum(cleaning_stats)} ",
@@ -90,7 +102,6 @@ clean_postcodes <- function(pcodes) {
                  "of initially invalid postcodes were successfully cleaned"))
   return(output)
   
-
 }
 
 
