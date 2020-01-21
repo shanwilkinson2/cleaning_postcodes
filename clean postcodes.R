@@ -1,6 +1,7 @@
 library(dplyr)
 library(stringr)
 library(glue)
+library(magrittr)
 
 # library(assertive)
 # library(purrr)
@@ -32,9 +33,16 @@ clean_postcodes <- function(pcodes) {
                                   str_to_upper() %>%
                                   str_replace_all("  ", " "), 
                                 no = output$output_pcode)
-  output$output_valid <- ifelse(str_detect(output$output_pcode, 
+  
+  # check for postcode validity 
+    # <<- assigns from parent environments 
+    # <- doesn't work as it only uses a local version within the check_again function
+  check_again <- function() {
+    output$output_valid <<- ifelse(str_detect(output$output_pcode, 
                                           pcode_regex), 
                                yes = TRUE, no = FALSE)
+  }
+  check_again()
 
 # get rid of any special characters & check again
   # [[:punct:]] = punctuation
@@ -52,10 +60,7 @@ clean_postcodes <- function(pcodes) {
                                   str_replace_all("\\)", "0") %>%
                                   str_replace_all("[[:punct:]]", ""),
                                 no = output$output_pcode)
-  
-  output$output_valid <- ifelse(str_detect(output$output_pcode, 
-                                           pcode_regex), 
-                                yes = TRUE, no = FALSE)
+  check_again()
   
 # dodgy spacing 
   # more than one space - get rid of all spaces
@@ -78,10 +83,7 @@ clean_postcodes <- function(pcodes) {
                                 yes = paste(str_sub(output$output_pcode, 1, -4), 
                                             str_sub(output$output_pcode, -3, -1)), 
                                 no = output$output_pcode)
-  # check again
-  output$output_valid <- ifelse(str_detect(output$output_pcode, 
-                                           pcode_regex), 
-                                yes = TRUE, no = FALSE)
+  check_again()
   
 # numbers to letters & vice versa (but only in the second half as where they tend to crop up)
   # o to zero
@@ -91,14 +93,13 @@ clean_postcodes <- function(pcodes) {
                                             str_sub(output$output_pcode, -2, -1)), 
                                 no = output$output_pcode)
   # check again
-  output$output_valid <- ifelse(str_detect(output$output_pcode, 
-                                           pcode_regex), 
-                                yes = TRUE, no = FALSE)  
+  check_again()  
   
   # message - summary of those that needed cleaning & how many were successfully cleaned
-    cleaning_stats <- table(output[output$input_valid ==FALSE, c(2,4)]) 
-    message(glue("{cleaning_stats[1,2]}/{sum(cleaning_stats)} ",
-                 "({round(cleaning_stats[1,2]/sum(cleaning_stats)*100)}%) ",
+
+    cleaning_stats <- output[output$input_valid == FALSE, c(2,4)]
+    message(glue("{length(which(cleaning_stats$output_valid == TRUE))}/{nrow(cleaning_stats)} ",
+                 "({round(length(which(cleaning_stats$output_valid == TRUE))/nrow(cleaning_stats)*100)}%) ",
                  "of initially invalid postcodes were successfully cleaned"))
   return(output)
   
