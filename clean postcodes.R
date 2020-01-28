@@ -11,7 +11,8 @@ library(magrittr)
               "SY11 2PR", "  W1A 1AA", "SW1A 1AA", "M46 OAA", "BL1", 
               "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
               '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP", "BL11PP", 
-              "M11af", "sw1a1AA", "Westhoughton", "M4. 5UP,", "bl 15AX")
+              "M11af", "sw1a1AA", "Westhoughton", "M4. 5UP,", "bl 15AX",
+              "41 High Street, Bolton, BL3 6HJ", "6 Park Road Westhoughton SW1A 1AA", "14 Church Rd, Bolton")
 
 clean_postcodes <- function(pcodes) {  
   
@@ -59,6 +60,14 @@ clean_postcodes <- function(pcodes) {
                                   str_replace_all("\\(", "9") %>%
                                   str_replace_all("\\)", "0") %>%
                                   str_replace_all("[[:punct:]]", ""),
+                                no = output$output_pcode)
+  check_again()
+  
+# strip postcode out of other text
+  output$output_pcode <- ifelse(output$output_valid == FALSE, 
+                                yes = ifelse(str_detect(output$output_pcode, "[A-Z]{1,2}\\d[A-Z\\d]? {1}\\d[A-Z]{2}") == TRUE, 
+                                             yes = str_extract(output$output_pcode, "[A-Z]{1,2}\\d[A-Z\\d]? {1}\\d[A-Z]{2}"),
+                                             no = output$output_pcode),
                                 no = output$output_pcode)
   check_again()
   
