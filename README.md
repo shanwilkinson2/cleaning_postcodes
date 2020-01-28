@@ -10,11 +10,13 @@
 * special characters to numbers (ie !"£ to 123)
 * other special characters deleted
 * double space changed to single space
+* strips postcode out of an address
 * no spaces - space inserted 4 from the end
 * more than one space not double
 * single space in the wrong place
 * o to zero in second half only eg WA11 OQZ to WA11 0QZ 
+
 ## not yet corrected 
 * E for 3 where it must be a number
-* extra text at beginning or end eg part answer to another question
+
 
