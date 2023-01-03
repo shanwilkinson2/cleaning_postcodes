@@ -20,6 +20,13 @@
     # add a column title for the postcodes called "raw_pcode", taking up 1 row only, 
     # row 2 onwards are assumed to contain the data, delete any extra heading rows, or add a heading row if needed
     filename <- "Postcodes for Rebecca 2022-12-12.xlsx"
+
+# check these are right
+  # read in postcode lookup - check it's the latest dated version
+    postcode_lookup <- data.table::fread(paste0("G:\\Mapping Data\\Postcode files/", "postcode lookup 2021-11.csv"))  
+
+  # get postcode cleaning function
+    source("G:\\Mapping Data\\R\\clean_postcodes/clean postcodes function.R")
     
 # run the rest #######################################################################################
 
@@ -30,15 +37,9 @@
   library(stringr)
   library(data.table)    
     
-# get postcode cleaning function
-  source("G:\\Mapping Data\\R\\clean_postcodes/clean postcodes function.R")
-
 # read in data
   pcode_file <- read_xlsx(paste0(file_location,"/", filename))
-  
-# read in postcode lookup - check it's the latest dated version
-  postcode_lookup <- fread(paste0("G:\\Mapping Data\\Postcode files/", "postcode lookup 2021-11.csv"))  
- 
+   
 # pick out the postcode field, do the cleaning & join in postcode lookup fields  
    pcodes_to_clean <- pcode_file %>%
     # select just postcode
