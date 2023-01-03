@@ -10,44 +10,46 @@ library(sf)
   # file location either needs to be \\ or / NOT \
   file_location <- "G:\\Mapping Data\\R\\clean_postcodes"
   filename <- "comm champs 2022-11-22 cleaned.xlsx"
+
+# check this
+  # borough boundaries
+    boroughs <- st_read("G:\\Mapping Data\\R\\map\\OS boundary file\\Data\\GB\\district_borough_unitary.TAB")
+
+  # MSOA  boundaries
+    # https://geoportal.statistics.gov.uk/datasets/middle-layer-super-output-areas-december-2011-boundaries-bgc
+    msoas_2011 <- st_read("G:\\Mapping Data\\R\\map\\MSOA/Middle_Layer_Super_Output_Areas_December_2011_Boundaries_BGC.shp")
   
+  # get house of commons library names 
+    # https://houseofcommonslibrary.github.io/msoanames/
+      msoa_hocnames <- read.csv("G:\\Mapping Data\\Postcode files/HoC MSOA-Names-2.2.csv")
+
 # run the rest #######################################################
   
-
 # read in file containing lat long (e.g. as created by postcode cleaning)
   # needs lat/ long rather than easting/ northing as interactive map is round projection not flat
   geocoded_pcodes <- readxl::read_xlsx(paste0(file_location,"/", filename))
 
-# get borough boundary to put on the map
-  # borough boundaries
-    boroughs <- st_read("G:\\Mapping Data\\R\\map\\OS boundary file\\Data\\GB\\district_borough_unitary.TAB")
+# borough boundary
     boroughs <- boroughs %>%
       mutate(borough = stringr::str_remove(Name, " District \\(B\\)")) %>%
       st_transform(crs = 4326) # transforms to lat/ long from OSGB36  
   
   # filter boroughs Bolton only
-  boroughs_bolton <- filter(boroughs, borough %in% "Bolton")
+    boroughs_bolton <- filter(boroughs, borough %in% "Bolton")
   # plot(st_geometry(boroughs_bolton)) # check areas look right 
-  rm(boroughs) # remove whole country of boroughs
+    rm(boroughs) # remove whole country of boroughs
   
-# sort MSOA boundaries & names
-  # MSOA  
-  # https://geoportal.statistics.gov.uk/datasets/middle-layer-super-output-areas-december-2011-boundaries-bgc
-  msoas_2011 <- st_read("G:\\Mapping Data\\R\\map\\MSOA/Middle_Layer_Super_Output_Areas_December_2011_Boundaries_BGC.shp")
-  
+# MSOA boundaries & names
   # add borough variable from MSOA name
   msoas_2011 <- msoas_2011 %>%
     mutate(borough = stringr::str_sub(msoa11nm, 1, nchar(as.character(msoa11nm))-4)) %>%
     st_transform(crs = 4326) # transforms to lat/ long from OSGB36
   
   # filter msoas 2011 Bolton only
-  msoas_bolton <- filter(msoas_2011, borough %in% "Bolton")
+    msoas_bolton <- filter(msoas_2011, borough %in% "Bolton")
   # plot(st_geometry(msoas_bolton)) # check areas look right  
-  rm(msoas_2011) # remove whole country of lsoas
-  
-  # get house of commons library names 
-  msoa_hocnames <- read.csv("G:\\Mapping Data\\Postcode files/HoC MSOA-Names-2.2.csv")
-  
+    rm(msoas_2011) # remove whole country of lsoas
+     
   # join house of commons library names to boundaries
   msoas_bolton <- left_join(msoas_bolton, msoa_hocnames, 
                               by = c("msoa11cd" = "msoa21cd"))
