@@ -12,7 +12,8 @@ library(magrittr)
               "BOLTON", "bl! 1R", "bl1  1ru", "BL1  1RU", "WN  1 2  DA",
               '!\"£$%^&*()', "BL& $RR", 'BL$ "RF', "BL1 1PPP", "BL11PP", 
               "M11af", "sw1a1AA", "Westhoughton", "M4. 5UP,", "bl 15AX",
-              "41 High Street, Bolton, BL3 6HJ", "6 Park Road Westhoughton SW1A 1AA", "14 Church Rd, Bolton")
+              "41 High Street, Bolton, BL3 6HJ", "6 Park Road Westhoughton SW1A 1AA", "14 Church Rd, Bolton",
+             "bl1&nbsp;1pp")
 
 clean_postcodes <- function(pcodes) {  
   
@@ -32,6 +33,7 @@ clean_postcodes <- function(pcodes) {
                                 yes = output$output_pcode %>%
                                   str_trim() %>%
                                   str_to_upper() %>%
+                                  str_replace_all("&NBSP;", " ") %>%
                                   str_replace_all("  ", " "), 
                                 no = output$output_pcode)
   
