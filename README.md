@@ -27,6 +27,7 @@
 ### Errors currently corrected:
 * lowercase
 * leading/ trailing spaces
+* &nbsp; to normal space
 * special characters to numbers (ie !"£ to 123)
 * other special characters deleted
 * double space changed to single space
